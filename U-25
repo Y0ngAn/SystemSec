@@ -1,0 +1,21 @@
+#!/bin/bash
+
+echo "[U-25] NFS 설정 보안 점검 시작"
+NFS_STATUS=$(ps -ef | grep -v grep | grep -E "nfsd|mountd")
+
+if [ -z "$NFS_STATUS" ]; then
+    echo "[결과] 양호: NFS 서비스가 비활성화되어 있습니다."
+else
+    if [ ! -f /etc/exports ]; then
+        echo "[결과] 취약: NFS 서비스가 실행 중이지만 /etc/exports 설정 파일이 없습니다."
+    else
+        VULN_CHECK=$(grep -v '^#' /etc/exports | grep -E "\*|no_root_squash")
+
+        if [ -n "$VULN_CHECK" ]; then
+            echo "[결과] 취약: 보안에 취약한 NFS 설정이 발견되었습니다."
+            echo "$VULN_CHECK"
+        else
+            echo "[결과] 양호: NFS 공유 설정이 적절히 제한되어 있습니다."
+        fi
+    fi
+fi

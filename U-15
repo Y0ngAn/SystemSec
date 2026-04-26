@@ -1,0 +1,12 @@
+#!/bin/bash
+
+CHECK_DIRS="/etc /bin /sbin /usr/bin /usr/sbin /lib /var/www"
+echo "[시작]U-15 : World Writable 점검"
+WRITABLE_LIST=$(find $CHECK_DIRS -type f -perm -2 -ls 2>/dev/null)
+
+if [ -z "$WRITABLE_LIST" ]; then
+    echo "[결과] 양호: World Writable 파일이 발견되지 않았습니다."
+else
+    echo "[결과] 취약: 다음의 World Writable 파일이 존재합니다."
+    echo "$WRITABLE_LIST"
+fi
